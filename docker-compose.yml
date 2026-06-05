@@ -1,0 +1,63 @@
+name: pharmacy
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      TZ: Europe/Moscow
+    volumes:
+      - ./:/var/www/html
+      - ./storage/logs/nginx:/var/log/nginx
+      - ./docker/nginx.conf:/etc/nginx/conf.d/localhost.conf
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_default
+      - traefik.http.services.pharmacy_service.loadbalancer.server.port=80
+      - traefik.http.routers.pharmacy_http.rule=Host(`site.local`)
+      - traefik.http.routers.pharmacy_http.entrypoints=web
+      - traefik.http.routers.pharmacy_http.service=pharmacy_service
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - traefik_default
+    
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - redis_data:/data
+      - ./docker/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      traefik_default:
+        aliases:
+          - pharmasy_redis
+
+
+  #rabbitmq:
+  #  image: rabbitmq:3
+  #  ports:
+  #    - "5672:5672"  # Проброс порта
+  #  volumes:
+  #    - ./rabbitmq_data:/var/lib/rabbitmq
+  #  logging:
+  #    driver: json-file
+  #    options:
+  #      max-size: "10m"
+  #      max-file: "3"
+  #  networks:
+  #    - traefik_default
+
+
+      
+networks:
+  traefik_default:
+    external: true
+
+volumes:
+  redis_data:

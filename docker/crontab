@@ -1,0 +1,8 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Laravel scheduler: runs every minute.
+* * * * * root cd /var/www/html && php artisan schedule:run >> /var/log/cron.log 2>&1
+
+# Optional test entry (uncomment to verify cron quickly):
+* * * * * root echo "[cron-ok] $(date -Iseconds)" >> /var/log/cron-test.log 2>&1
