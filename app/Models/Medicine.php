@@ -11,6 +11,8 @@ class Medicine extends Model
         'name',
         'sku',
         'manufacturer',
+        'description',
+        'dosage_form',
         'unit',
         'is_active',
     ];

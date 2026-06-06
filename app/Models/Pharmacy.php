@@ -35,4 +35,9 @@ class Pharmacy extends Model
     {
         return $this->hasMany(PharmacyInventoryItem::class);
     }
+
+    public function customerOrders(): HasMany
+    {
+        return $this->hasMany(CustomerOrder::class);
+    }
 }
