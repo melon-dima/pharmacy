@@ -12,6 +12,8 @@ use Src\Modules\CustomerOrders\Domain\Repositories\CustomerOrderRepositoryInterf
 use Src\Modules\CustomerOrders\Infrastructure\Repositories\EloquentCustomerOrderRepository;
 use Src\Modules\Inventory\Domain\Repositories\InventoryRepositoryInterface;
 use Src\Modules\Inventory\Infrastructure\Repositories\EloquentInventoryRepository;
+use Src\Modules\Medicines\Domain\Repositories\MedicineRepositoryInterface;
+use Src\Modules\Medicines\Infrastructure\Repositories\EloquentMedicineRepository;
 use Src\Modules\Pharmacies\Domain\Repositories\PharmacyRepositoryInterface;
 use Src\Modules\Pharmacies\Infrastructure\Repositories\EloquentPharmacyRepository;
 use Src\Modules\Users\Repositories\EloquentUserRepository;
@@ -27,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CatalogRepositoryInterface::class, EloquentCatalogRepository::class);
         $this->app->bind(CustomerOrderRepositoryInterface::class, EloquentCustomerOrderRepository::class);
         $this->app->bind(InventoryRepositoryInterface::class, EloquentInventoryRepository::class);
+        $this->app->bind(MedicineRepositoryInterface::class, EloquentMedicineRepository::class);
         $this->app->bind(PharmacyRepositoryInterface::class, EloquentPharmacyRepository::class);
         $this->app->bind(UserRepositoryInterface::class, EloquentUserRepository::class);
     }

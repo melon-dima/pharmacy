@@ -16,8 +16,17 @@ class CustomerOrder extends Model
         'customer_name',
         'customer_phone',
         'delivery_address',
+        'total_cents',
+        'currency',
         'comment',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'total_cents' => 'integer',
+        ];
+    }
 
     public function user(): BelongsTo
     {

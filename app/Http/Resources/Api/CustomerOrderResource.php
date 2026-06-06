@@ -19,6 +19,8 @@ class CustomerOrderResource extends JsonResource
             'customer_name' => $this->customer_name,
             'customer_phone' => $this->customer_phone,
             'delivery_address' => $this->delivery_address,
+            'total_cents' => $this->total_cents,
+            'currency' => $this->currency,
             'comment' => $this->comment,
             'pharmacy' => $this->whenLoaded('pharmacy', fn (): ?array => $this->pharmacy === null ? null : [
                 'id' => $this->pharmacy->id,
@@ -32,6 +34,8 @@ class CustomerOrderResource extends JsonResource
                 'medicine_name' => $item->medicine_name,
                 'medicine_sku' => $item->medicine_sku,
                 'quantity' => $item->quantity,
+                'unit_price_cents' => $item->unit_price_cents,
+                'currency' => $item->currency,
             ])->values()),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),

@@ -22,6 +22,8 @@ class CatalogApiTest extends TestCase
             'name' => 'Aspirin',
             'sku' => 'MED-001',
             'description' => 'Pain relief',
+            'price_cents' => 12345,
+            'currency' => 'RUB',
             'is_active' => true,
         ]);
         Medicine::query()->create([
@@ -40,6 +42,7 @@ class CatalogApiTest extends TestCase
         $response
             ->assertOk()
             ->assertJsonPath('data.0.name', 'Aspirin')
+            ->assertJsonPath('data.0.price_cents', 12345)
             ->assertJsonPath('data.0.available_quantity', 12);
         $this->assertCount(1, $response->json('data'));
     }

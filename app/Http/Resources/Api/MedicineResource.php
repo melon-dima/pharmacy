@@ -20,6 +20,8 @@ class MedicineResource extends JsonResource
             'description' => $this->description,
             'dosage_form' => $this->dosage_form,
             'unit' => $this->unit,
+            'price_cents' => $this->price_cents,
+            'currency' => $this->currency,
             'available_quantity' => (int) ($this->resource->relationLoaded('inventoryItems')
                 ? $this->inventoryItems->sum('quantity')
                 : ($this->available_quantity ?? 0)),

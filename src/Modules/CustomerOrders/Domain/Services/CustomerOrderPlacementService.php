@@ -45,6 +45,8 @@ class CustomerOrderPlacementService
         }
 
         $items = [];
+        $totalCents = 0;
+        $currency = 'RUB';
         foreach ($data->items as $itemData) {
             $quantity = (new OrderQuantity($itemData->quantity))->value();
             $medicine = $this->orders->findMedicine($itemData->medicineId);
@@ -60,11 +62,17 @@ class CustomerOrderPlacementService
                 }
             }
 
+            $unitPriceCents = (int) ($medicine->price_cents ?? 0);
+            $currency = (string) ($medicine->currency ?? $currency);
+            $totalCents += $unitPriceCents * $quantity;
+
             $items[] = [
                 'medicine_id' => $medicine->id,
                 'medicine_name' => $medicine->name,
                 'medicine_sku' => $medicine->sku,
                 'quantity' => $quantity,
+                'unit_price_cents' => $unitPriceCents,
+                'currency' => $currency,
             ];
         }
 
@@ -75,6 +83,8 @@ class CustomerOrderPlacementService
             'customer_name' => trim($data->customerName),
             'customer_phone' => trim($data->customerPhone),
             'delivery_address' => $data->deliveryAddress === null ? null : trim($data->deliveryAddress),
+            'total_cents' => $totalCents,
+            'currency' => $currency,
             'comment' => $data->comment === null ? null : trim($data->comment),
         ], $items);
     }

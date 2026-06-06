@@ -25,6 +25,8 @@ class CustomerOrderApiTest extends TestCase
         $medicine = Medicine::query()->create([
             'name' => 'Aspirin',
             'sku' => 'MED-001',
+            'price_cents' => 500,
+            'currency' => 'RUB',
             'is_active' => true,
         ]);
         PharmacyInventoryItem::query()->create([
@@ -48,6 +50,7 @@ class CustomerOrderApiTest extends TestCase
             ->assertCreated()
             ->assertJsonPath('data.delivery_type', 'pickup')
             ->assertJsonPath('data.status', 'pending')
+            ->assertJsonPath('data.total_cents', 1000)
             ->assertJsonPath('data.items.0.medicine_name', 'Aspirin');
         $this->assertDatabaseHas('customer_orders', [
             'user_id' => $user->id,

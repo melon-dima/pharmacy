@@ -56,6 +56,8 @@ class CustomerOrderPlacementServiceTest extends TestCase
             'name' => 'Aspirin',
             'sku' => 'MED-001',
             'is_active' => true,
+            'price_cents' => 500,
+            'currency' => 'RUB',
         ]);
         $medicine->id = 7;
         $data = new CreateCustomerOrderData(
@@ -135,6 +137,8 @@ class CustomerOrderPlacementServiceTest extends TestCase
                     'customer_name' => 'Alice',
                     'customer_phone' => '+100000000',
                     'delivery_address' => null,
+                    'total_cents' => 2000,
+                    'currency' => 'RUB',
                     'comment' => 'Call me',
                 ],
                 [[
@@ -142,6 +146,8 @@ class CustomerOrderPlacementServiceTest extends TestCase
                     'medicine_name' => 'Aspirin',
                     'medicine_sku' => 'MED-001',
                     'quantity' => 4,
+                    'unit_price_cents' => 500,
+                    'currency' => 'RUB',
                 ]],
             )
             ->willReturn($order);

@@ -13,14 +13,19 @@ class Medicine extends Model
         'manufacturer',
         'description',
         'dosage_form',
+        'price_cents',
+        'currency',
         'unit',
         'is_active',
+        'external_system',
+        'external_id',
     ];
 
     protected function casts(): array
     {
         return [
             'is_active' => 'boolean',
+            'price_cents' => 'integer',
         ];
     }
 

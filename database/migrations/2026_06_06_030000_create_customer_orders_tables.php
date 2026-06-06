@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('customer_name');
             $table->string('customer_phone');
             $table->string('delivery_address')->nullable();
+            $table->unsignedInteger('total_cents')->default(0);
+            $table->char('currency', 3)->default('RUB');
             $table->text('comment')->nullable();
             $table->timestamps();
         });
@@ -31,6 +33,8 @@ return new class extends Migration
             $table->string('medicine_name');
             $table->string('medicine_sku')->nullable();
             $table->unsignedInteger('quantity');
+            $table->unsignedInteger('unit_price_cents')->default(0);
+            $table->char('currency', 3)->default('RUB');
             $table->timestamps();
         });
     }

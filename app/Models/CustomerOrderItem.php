@@ -13,12 +13,15 @@ class CustomerOrderItem extends Model
         'medicine_name',
         'medicine_sku',
         'quantity',
+        'unit_price_cents',
+        'currency',
     ];
 
     protected function casts(): array
     {
         return [
             'quantity' => 'integer',
+            'unit_price_cents' => 'integer',
         ];
     }
 
