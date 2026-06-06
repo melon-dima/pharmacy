@@ -6,6 +6,7 @@ use App\Models\Medicine;
 use Src\Modules\Medicines\Domain\Exceptions\DuplicateMedicineExternalIdentity;
 use Src\Modules\Medicines\Domain\Exceptions\DuplicateMedicineSku;
 use Src\Modules\Medicines\Domain\Repositories\MedicineRepositoryInterface;
+use Src\Modules\Medicines\Domain\Search\MedicineSearchIndexerInterface;
 use Src\Modules\Medicines\Domain\ValueObjects\MedicineExternalIdentity;
 use Src\Modules\Medicines\Domain\ValueObjects\MedicinePrice;
 use Src\Modules\Medicines\Domain\ValueObjects\MedicineSku;
@@ -15,6 +16,7 @@ class MedicineCatalogManagementService
 {
     public function __construct(
         private readonly MedicineRepositoryInterface $medicines,
+        private readonly MedicineSearchIndexerInterface $searchIndexer,
     ) {
     }
 
@@ -24,7 +26,10 @@ class MedicineCatalogManagementService
         $this->ensureSkuIsUnique($payload['sku']);
         $this->ensureExternalIdentityIsUnique($payload['external_system'], $payload['external_id']);
 
-        return $this->medicines->create($payload);
+        $medicine = $this->medicines->create($payload);
+        $this->searchIndexer->index($medicine);
+
+        return $medicine;
     }
 
     public function update(Medicine $medicine, MedicineData $data): Medicine
@@ -33,12 +38,18 @@ class MedicineCatalogManagementService
         $this->ensureSkuIsUnique($payload['sku'], $medicine->id);
         $this->ensureExternalIdentityIsUnique($payload['external_system'], $payload['external_id'], $medicine->id);
 
-        return $this->medicines->update($medicine, $payload);
+        $medicine = $this->medicines->update($medicine, $payload);
+        $this->searchIndexer->index($medicine);
+
+        return $medicine;
     }
 
     public function deactivate(Medicine $medicine): Medicine
     {
-        return $this->medicines->deactivate($medicine);
+        $medicine = $this->medicines->deactivate($medicine);
+        $this->searchIndexer->remove($medicine);
+
+        return $medicine;
     }
 
     /**

@@ -35,4 +35,18 @@ return [
         ],
     ],
 
+    'elasticsearch' => [
+        'url' => env('ELASTICSEARCH_URL', 'http://elasticsearch:9200'),
+        'medicine_index' => env('ELASTICSEARCH_MEDICINE_INDEX', 'medicines'),
+        'timeout' => (int) env('ELASTICSEARCH_TIMEOUT', 2),
+    ],
+
+    'clickhouse' => [
+        'url' => env('CLICKHOUSE_URL', 'http://clickhouse:8123'),
+        'database' => env('CLICKHOUSE_DATABASE', 'pharmacy'),
+        'username' => env('CLICKHOUSE_USERNAME', 'pharmacy'),
+        'password' => env('CLICKHOUSE_PASSWORD', 'pharmacy'),
+        'timeout' => (int) env('CLICKHOUSE_TIMEOUT', 2),
+    ],
+
 ];

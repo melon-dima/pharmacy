@@ -12,8 +12,8 @@ class ListCatalogMedicinesAction
     ) {
     }
 
-    public function handle(int $perPage = 20): LengthAwarePaginator
+    public function handle(int $perPage = 20, ?string $query = null): LengthAwarePaginator
     {
-        return $this->service->paginateMedicines($perPage);
+        return $this->service->paginateMedicines($perPage, $query);
     }
 }

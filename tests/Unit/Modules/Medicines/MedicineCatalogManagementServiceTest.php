@@ -8,12 +8,15 @@ use PHPUnit\Framework\TestCase;
 use Src\Modules\Medicines\Domain\Exceptions\DuplicateMedicineExternalIdentity;
 use Src\Modules\Medicines\Domain\Exceptions\DuplicateMedicineSku;
 use Src\Modules\Medicines\Domain\Repositories\MedicineRepositoryInterface;
+use Src\Modules\Medicines\Domain\Search\MedicineSearchIndexerInterface;
 use Src\Modules\Medicines\Domain\Services\MedicineCatalogManagementService;
 use Src\Modules\Medicines\DTO\MedicineData;
 
 class MedicineCatalogManagementServiceTest extends TestCase
 {
     private MedicineRepositoryInterface&MockObject $repository;
+
+    private MedicineSearchIndexerInterface&MockObject $searchIndexer;
 
     private MedicineCatalogManagementService $service;
 
@@ -22,7 +25,8 @@ class MedicineCatalogManagementServiceTest extends TestCase
         parent::setUp();
 
         $this->repository = $this->createMock(MedicineRepositoryInterface::class);
-        $this->service = new MedicineCatalogManagementService($this->repository);
+        $this->searchIndexer = $this->createMock(MedicineSearchIndexerInterface::class);
+        $this->service = new MedicineCatalogManagementService($this->repository, $this->searchIndexer);
     }
 
     public function test_create_normalizes_catalog_fields_before_persisting(): void
@@ -72,6 +76,11 @@ class MedicineCatalogManagementServiceTest extends TestCase
             ])
             ->willReturn($medicine);
 
+        $this->searchIndexer
+            ->expects($this->once())
+            ->method('index')
+            ->with($this->identicalTo($medicine));
+
         $this->assertSame($medicine, $this->service->create($data));
     }
 
@@ -100,6 +109,10 @@ class MedicineCatalogManagementServiceTest extends TestCase
         $this->repository
             ->expects($this->never())
             ->method('create');
+
+        $this->searchIndexer
+            ->expects($this->never())
+            ->method('index');
 
         $this->expectException(DuplicateMedicineSku::class);
 
@@ -131,6 +144,10 @@ class MedicineCatalogManagementServiceTest extends TestCase
         $this->repository
             ->expects($this->never())
             ->method('create');
+
+        $this->searchIndexer
+            ->expects($this->never())
+            ->method('index');
 
         $this->expectException(DuplicateMedicineExternalIdentity::class);
 

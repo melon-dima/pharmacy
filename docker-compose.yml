@@ -38,6 +38,29 @@ services:
         aliases:
           - pharmasy_redis
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - traefik_default
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8-alpine
+    environment:
+      CLICKHOUSE_DB: pharmacy
+      CLICKHOUSE_USER: pharmacy
+      CLICKHOUSE_PASSWORD: pharmacy
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./database/clickhouse:/docker-entrypoint-initdb.d:ro
+    networks:
+      - traefik_default
+
 
   #rabbitmq:
   #  image: rabbitmq:3
@@ -61,3 +84,5 @@ networks:
 
 volumes:
   redis_data:
+  elasticsearch_data:
+  clickhouse_data:

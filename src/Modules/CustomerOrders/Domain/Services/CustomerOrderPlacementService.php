@@ -4,6 +4,8 @@ namespace Src\Modules\CustomerOrders\Domain\Services;
 
 use App\Models\CustomerOrder;
 use App\Models\User;
+use Src\Modules\Analytics\Domain\AnalyticsEventRecorderInterface;
+use Src\Modules\Analytics\DTO\AnalyticsEventData;
 use Src\Modules\CustomerOrders\Domain\Exceptions\CannotOrderInactivePharmacy;
 use Src\Modules\CustomerOrders\Domain\Exceptions\EmptyCustomerOrder;
 use Src\Modules\CustomerOrders\Domain\Exceptions\MedicineUnavailableForPickup;
@@ -19,6 +21,7 @@ class CustomerOrderPlacementService
 {
     public function __construct(
         private readonly CustomerOrderRepositoryInterface $orders,
+        private readonly AnalyticsEventRecorderInterface $analytics,
     ) {
     }
 
@@ -76,7 +79,7 @@ class CustomerOrderPlacementService
             ];
         }
 
-        return $this->orders->create($user, [
+        $order = $this->orders->create($user, [
             'pharmacy_id' => $data->pharmacyId,
             'delivery_type' => $deliveryType->value,
             'status' => OrderStatus::Pending->value,
@@ -87,5 +90,21 @@ class CustomerOrderPlacementService
             'currency' => $currency,
             'comment' => $data->comment === null ? null : trim($data->comment),
         ], $items);
+
+        $this->analytics->record(new AnalyticsEventData(
+            eventName: 'customer_order_created',
+            actorId: $user->id,
+            subjectType: 'customer_order',
+            subjectId: $order->id,
+            payload: [
+                'delivery_type' => $deliveryType->value,
+                'pharmacy_id' => $data->pharmacyId,
+                'total_cents' => $totalCents,
+                'currency' => $currency,
+                'items_count' => count($items),
+            ],
+        ));
+
+        return $order;
     }
 }

@@ -8,6 +8,8 @@ use App\Models\Pharmacy;
 use App\Models\User;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Src\Modules\Analytics\Domain\AnalyticsEventRecorderInterface;
+use Src\Modules\Analytics\DTO\AnalyticsEventData;
 use Src\Modules\CustomerOrders\Domain\Exceptions\MedicineUnavailableForPickup;
 use Src\Modules\CustomerOrders\Domain\Exceptions\MissingDeliveryAddress;
 use Src\Modules\CustomerOrders\Domain\Repositories\CustomerOrderRepositoryInterface;
@@ -19,6 +21,8 @@ class CustomerOrderPlacementServiceTest extends TestCase
 {
     private CustomerOrderRepositoryInterface&MockObject $repository;
 
+    private AnalyticsEventRecorderInterface&MockObject $analytics;
+
     private CustomerOrderPlacementService $service;
 
     protected function setUp(): void
@@ -26,7 +30,8 @@ class CustomerOrderPlacementServiceTest extends TestCase
         parent::setUp();
 
         $this->repository = $this->createMock(CustomerOrderRepositoryInterface::class);
-        $this->service = new CustomerOrderPlacementService($this->repository);
+        $this->analytics = $this->createMock(AnalyticsEventRecorderInterface::class);
+        $this->service = new CustomerOrderPlacementService($this->repository, $this->analytics);
     }
 
     public function test_home_delivery_requires_delivery_address(): void
@@ -103,6 +108,7 @@ class CustomerOrderPlacementServiceTest extends TestCase
         ]);
         $medicine->id = 7;
         $order = new CustomerOrder();
+        $order->id = 11;
         $data = new CreateCustomerOrderData(
             deliveryType: 'pickup',
             pharmacyId: 5,
@@ -151,6 +157,17 @@ class CustomerOrderPlacementServiceTest extends TestCase
                 ]],
             )
             ->willReturn($order);
+
+        $this->analytics
+            ->expects($this->once())
+            ->method('record')
+            ->with($this->callback(function (AnalyticsEventData $event): bool {
+                return $event->eventName === 'customer_order_created'
+                    && $event->actorId === 3
+                    && $event->subjectType === 'customer_order'
+                    && $event->subjectId === 11
+                    && $event->payload['total_cents'] === 2000;
+            }));
 
         $this->assertSame($order, $this->service->place($user, $data));
     }

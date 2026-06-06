@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\MedicineResource;
 use App\Http\Resources\Api\PharmacyResource;
 use App\Models\Medicine;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Src\Modules\Catalog\Actions\ListCatalogMedicinesAction;
 use Src\Modules\Catalog\Actions\ListCatalogPharmaciesAction;
@@ -20,9 +21,11 @@ class CatalogController extends Controller
     ) {
     }
 
-    public function medicines(): AnonymousResourceCollection
+    public function medicines(Request $request): AnonymousResourceCollection
     {
-        return MedicineResource::collection($this->listCatalogMedicinesAction->handle(20));
+        return MedicineResource::collection(
+            $this->listCatalogMedicinesAction->handle(20, $request->string('search')->toString())
+        );
     }
 
     public function medicine(Medicine $medicine): MedicineResource

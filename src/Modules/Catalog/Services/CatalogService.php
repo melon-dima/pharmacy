@@ -6,17 +6,30 @@ use App\Models\Medicine;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Src\Modules\Catalog\Domain\Repositories\CatalogRepositoryInterface;
+use Src\Modules\Catalog\Domain\Repositories\CatalogSearchRepositoryInterface;
 
 class CatalogService
 {
     public function __construct(
         private readonly CatalogRepositoryInterface $catalog,
+        private readonly CatalogSearchRepositoryInterface $search,
     ) {
     }
 
-    public function paginateMedicines(int $perPage = 20): LengthAwarePaginator
+    public function paginateMedicines(int $perPage = 20, ?string $query = null): LengthAwarePaginator
     {
-        return $this->catalog->paginateActiveMedicines($perPage);
+        $query = $query === null ? null : trim($query);
+
+        if ($query === null || $query === '') {
+            return $this->catalog->paginateActiveMedicines($perPage);
+        }
+
+        $medicineIds = $this->search->searchMedicineIds($query);
+        if ($medicineIds !== null) {
+            return $this->catalog->paginateActiveMedicinesByIds($medicineIds, $perPage);
+        }
+
+        return $this->catalog->paginateActiveMedicines($perPage, $query);
     }
 
     public function loadMedicine(Medicine $medicine): Medicine
