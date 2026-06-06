@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Services\RbacService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Src\Modules\Pharmacies\Domain\Repositories\PharmacyRepositoryInterface;
+use Src\Modules\Pharmacies\Infrastructure\Repositories\EloquentPharmacyRepository;
 use Src\Modules\Users\Repositories\EloquentUserRepository;
 use Src\Modules\Users\Repositories\UserRepositoryInterface;
 
@@ -16,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(PharmacyRepositoryInterface::class, EloquentPharmacyRepository::class);
         $this->app->bind(UserRepositoryInterface::class, EloquentUserRepository::class);
     }
 
