@@ -147,4 +147,124 @@ class PharmacyLifecycleServiceTest extends TestCase
 
         $this->service->update($pharmacy, $data);
     }
+
+    public function test_update_allows_deactivation_without_active_employees_or_future_shifts(): void
+    {
+        $pharmacy = new Pharmacy(['is_active' => true]);
+        $pharmacy->id = 10;
+        $data = new PharmacyData(
+            name: 'Central Pharmacy',
+            code: ' apt-001 ',
+            address: null,
+            phone: null,
+            isActive: false,
+        );
+
+        $this->repository
+            ->expects($this->once())
+            ->method('codeExists')
+            ->with('APT-001', 10)
+            ->willReturn(false);
+
+        $this->repository
+            ->expects($this->once())
+            ->method('hasActiveEmployees')
+            ->with(10)
+            ->willReturn(false);
+
+        $this->repository
+            ->expects($this->once())
+            ->method('hasFutureShifts')
+            ->with(10)
+            ->willReturn(false);
+
+        $this->repository
+            ->expects($this->once())
+            ->method('update')
+            ->with(
+                $this->identicalTo($pharmacy),
+                [
+                    'name' => 'Central Pharmacy',
+                    'code' => 'APT-001',
+                    'address' => null,
+                    'phone' => null,
+                    'is_active' => false,
+                ],
+            )
+            ->willReturn($pharmacy);
+
+        $this->assertSame($pharmacy, $this->service->update($pharmacy, $data));
+    }
+
+    public function test_update_does_not_check_deactivation_rules_when_pharmacy_stays_active(): void
+    {
+        $pharmacy = new Pharmacy(['is_active' => true]);
+        $pharmacy->id = 10;
+        $data = new PharmacyData(
+            name: 'Central Pharmacy',
+            code: null,
+            address: null,
+            phone: null,
+            isActive: true,
+        );
+
+        $this->repository
+            ->expects($this->never())
+            ->method('codeExists');
+
+        $this->repository
+            ->expects($this->never())
+            ->method('hasActiveEmployees');
+
+        $this->repository
+            ->expects($this->never())
+            ->method('hasFutureShifts');
+
+        $this->repository
+            ->expects($this->once())
+            ->method('update')
+            ->with(
+                $this->identicalTo($pharmacy),
+                [
+                    'name' => 'Central Pharmacy',
+                    'code' => null,
+                    'address' => null,
+                    'phone' => null,
+                    'is_active' => true,
+                ],
+            )
+            ->willReturn($pharmacy);
+
+        $this->assertSame($pharmacy, $this->service->update($pharmacy, $data));
+    }
+
+    public function test_create_does_not_check_unique_code_when_code_is_missing(): void
+    {
+        $data = new PharmacyData(
+            name: 'Central Pharmacy',
+            code: null,
+            address: null,
+            phone: null,
+            isActive: true,
+        );
+        $pharmacy = new Pharmacy();
+
+        $this->repository
+            ->expects($this->never())
+            ->method('codeExists');
+
+        $this->repository
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'name' => 'Central Pharmacy',
+                'code' => null,
+                'address' => null,
+                'phone' => null,
+                'is_active' => true,
+            ])
+            ->willReturn($pharmacy);
+
+        $this->assertSame($pharmacy, $this->service->create($data));
+    }
 }

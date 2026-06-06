@@ -20,4 +20,11 @@ class PharmacyCodeTest extends TestCase
 
         $this->assertNull($code->value());
     }
+
+    public function test_null_code_stays_null(): void
+    {
+        $code = new PharmacyCode(null);
+
+        $this->assertNull($code->value());
+    }
 }
