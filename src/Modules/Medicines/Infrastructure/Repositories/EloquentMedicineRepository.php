@@ -8,9 +8,30 @@ use Src\Modules\Medicines\Domain\Repositories\MedicineRepositoryInterface;
 
 class EloquentMedicineRepository implements MedicineRepositoryInterface
 {
-    public function paginate(int $perPage): LengthAwarePaginator
+    public function paginate(int $perPage, ?string $search = null): LengthAwarePaginator
     {
         return Medicine::query()
+            ->when($search !== null && trim($search) !== '', function ($query) use ($search): void {
+                $search = trim($search);
+                $query->where(function ($query) use ($search): void {
+                    $query
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "%{$search}%")
+                        ->orWhere('manufacturer', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('dosage_form', 'like', "%{$search}%")
+                        ->orWhere('external_id', 'like', "%{$search}%");
+                });
+            })
+            ->withCount('inventoryItems')
+            ->orderBy('name')
+            ->paginate($perPage);
+    }
+
+    public function paginateByIds(array $medicineIds, int $perPage): LengthAwarePaginator
+    {
+        return Medicine::query()
+            ->whereIn('id', $medicineIds === [] ? [-1] : $medicineIds)
             ->withCount('inventoryItems')
             ->orderBy('name')
             ->paginate($perPage);

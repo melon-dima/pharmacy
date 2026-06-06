@@ -7,7 +7,12 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface MedicineRepositoryInterface
 {
-    public function paginate(int $perPage): LengthAwarePaginator;
+    public function paginate(int $perPage, ?string $search = null): LengthAwarePaginator;
+
+    /**
+     * @param array<int, int> $medicineIds
+     */
+    public function paginateByIds(array $medicineIds, int $perPage): LengthAwarePaginator;
 
     public function loadForShow(Medicine $medicine): Medicine;
 

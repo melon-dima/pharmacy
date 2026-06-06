@@ -25,9 +25,10 @@ class MedicineController extends Controller
 
     public function index(): View
     {
-        $medicines = $this->listMedicinesAction->handle(20);
+        $search = request()->string('search')->toString();
+        $medicines = $this->listMedicinesAction->handle(20, $search);
 
-        return view('portal.medicines.index', compact('medicines'));
+        return view('portal.medicines.index', compact('medicines', 'search'));
     }
 
     public function show(Medicine $medicine): View

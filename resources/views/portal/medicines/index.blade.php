@@ -17,6 +17,25 @@
     </a>
 </div>
 
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="GET" action="{{ route('medicines.index') }}" class="row g-2 align-items-end">
+            <div class="col-md-8">
+                <label class="form-label">Поиск</label>
+                <input type="search" name="search" class="form-control" value="{{ $search ?? '' }}" placeholder="Название, код, производитель, описание, ID из 1С">
+            </div>
+            <div class="col-md-auto">
+                <button class="btn btn-primary" type="submit">Найти</button>
+            </div>
+            @if(! empty($search))
+                <div class="col-md-auto">
+                    <a href="{{ route('medicines.index') }}" class="btn btn-outline-secondary">Сбросить</a>
+                </div>
+            @endif
+        </form>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -72,6 +91,6 @@
 </div>
 
 <div class="mt-3">
-    {{ $medicines->links() }}
+    {{ $medicines->withQueryString()->links() }}
 </div>
 @endsection
