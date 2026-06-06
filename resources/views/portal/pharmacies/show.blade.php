@@ -5,6 +5,37 @@
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('pharmacies.index') }}" class="text-decoration-none">Аптеки</a></li>
     <li class="breadcrumb-item active">Просмотр</li>
+<div class="card mt-3">
+    <div class="card-header">Остатки лекарств</div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Лекарство</th>
+                        <th>Код</th>
+                        <th>Количество</th>
+                        <th>Минимум</th>
+                        <th class="pe-3">Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @forelse($pharmacy->inventoryItems as $item)
+                    <tr>
+                        <td class="ps-3">{{ $item->medicine?->name ?? '-' }}</td>
+                        <td>{{ $item->medicine?->sku ?? '-' }}</td>
+                        <td>{{ $item->quantity }} {{ $item->medicine?->unit }}</td>
+                        <td>{{ $item->minimum_quantity }} {{ $item->medicine?->unit }}</td>
+                        <td class="pe-3">{{ $item->isLowStock() ? 'Мало' : 'Достаточно' }}</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="5" class="text-center py-4 text-muted">В аптеке пока нет лекарств в учете</td></tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('content')

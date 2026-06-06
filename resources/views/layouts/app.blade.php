@@ -259,6 +259,10 @@
             <i class="bi bi-check2-square link-icon"></i>
             <span class="link-text">Чек-листы</span>
         </a>
+        <a href="{{ route('inventory.index') }}" class="sidebar-link {{ request()->is('inventory*') ? 'active' : '' }}">
+            <i class="bi bi-capsule link-icon"></i>
+            <span class="link-text">Учет лекарств</span>
+        </a>
 
         <div class="nav-section-title">Кадры</div>
         <a href="{{ route('pharmacies.index') }}" class="sidebar-link {{ request()->is('pharmacies*') ? 'active' : '' }}">

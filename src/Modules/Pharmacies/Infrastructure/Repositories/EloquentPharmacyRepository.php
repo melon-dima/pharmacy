@@ -14,14 +14,14 @@ class EloquentPharmacyRepository implements PharmacyRepositoryInterface
     public function paginate(int $perPage): LengthAwarePaginator
     {
         return Pharmacy::query()
-            ->withCount(['employees', 'shifts', 'checklists'])
+            ->withCount(['employees', 'shifts', 'checklists', 'inventoryItems'])
             ->orderBy('name')
             ->paginate($perPage);
     }
 
     public function loadForShow(Pharmacy $pharmacy): Pharmacy
     {
-        return $pharmacy->load(['employees', 'shifts', 'checklists']);
+        return $pharmacy->load(['employees', 'shifts', 'checklists', 'inventoryItems.medicine']);
     }
 
     public function codeExists(string $code, ?int $ignorePharmacyId = null): bool

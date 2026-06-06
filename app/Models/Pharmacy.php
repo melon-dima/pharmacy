@@ -30,4 +30,9 @@ class Pharmacy extends Model
     {
         return $this->hasMany(Checklist::class);
     }
+
+    public function inventoryItems(): HasMany
+    {
+        return $this->hasMany(PharmacyInventoryItem::class);
+    }
 }

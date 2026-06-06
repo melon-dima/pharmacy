@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeRequestController;
 use App\Http\Controllers\ExchangeController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ScheduleController;
@@ -33,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('schedules', ScheduleController::class)->only(['index', 'show', 'create', 'store', 'edit', 'update']);
     Route::resource('timelog', TimeLogController::class)->only(['index', 'show', 'create', 'store', 'edit', 'update']);
     Route::resource('checklists', ChecklistController::class)->only(['index', 'show', 'create', 'store', 'edit', 'update']);
+    Route::resource('inventory', InventoryController::class)->only(['index', 'show', 'create', 'store', 'edit', 'update']);
     Route::resource('pharmacies', PharmacyController::class)->only(['index', 'show', 'create', 'store', 'edit', 'update']);
     Route::resource('employees', EmployeeController::class)->only(['index', 'show', 'create', 'store', 'edit', 'update']);
     Route::resource('requests', EmployeeRequestController::class)->only(['index', 'show', 'create', 'store', 'edit', 'update']);
